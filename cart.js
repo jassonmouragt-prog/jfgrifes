@@ -130,9 +130,37 @@
     totalText.textContent=sum==null?'Total: a confirmar com a loja':`Total: ${money(sum)}`;
   }
 
-  /* Controles de compra exibidos em cada produto da vitrine */
-  function addControls(product){
-    const wrap=document.createElement('div');wrap.className='variant-controls';
+  /* Janela do produto: ao clicar no produto da vitrine, o cliente escolhe cor e tamanho e adiciona ao carrinho. */
+  const modal=document.createElement('dialog');
+  modal.className='product-modal';
+  modal.innerHTML=`<button type="button" class="pm-close" aria-label="Fechar">×</button>
+    <div class="pm-layout">
+      <img class="pm-image" alt="">
+      <div class="pm-info">
+        <small class="pm-cat"></small>
+        <h3 class="pm-name"></h3>
+        <p class="pm-price"></p>
+        <p class="pm-stock"></p>
+        <p class="pm-desc"></p>
+        <div class="pm-fields"></div>
+        <button type="button" class="add-to-cart pm-add">ADICIONAR AO CARRINHO</button>
+        <p class="cart-feedback pm-feedback" role="status"></p>
+      </div>
+    </div>`;
+  document.body.append(modal);
+  const mq=selector=>modal.querySelector(selector);
+  mq('.pm-close').addEventListener('click',()=>modal.close());
+  modal.addEventListener('click',event=>{if(event.target===modal)modal.close()});
+
+  function openProduct(product){
+    const image=mq('.pm-image');image.src=safeImage(product.image);image.alt=product.name;
+    mq('.pm-cat').textContent=product.category||'';
+    mq('.pm-name').textContent=product.name;
+    mq('.pm-price').textContent=money(product.price);
+    mq('.pm-stock').textContent=product.stock==null?'Disponibilidade sob consulta':product.stock===1?'1 unidade disponível':`${product.stock} unidades disponíveis`;
+    mq('.pm-desc').textContent=product.description||'';
+    mq('.pm-desc').hidden=!product.description;
+    const fields=mq('.pm-fields');fields.replaceChildren();
     const selects={};
     for(const [key,label,values] of [['color','Cor',product.colors],['size','Tamanho',product.sizes]]){
       if(!Array.isArray(values)||!values.length)continue;
@@ -141,20 +169,31 @@
       const select=document.createElement('select');select.setAttribute('aria-label',`${label} de ${product.name}`);
       select.append(new Option(`Escolha a ${label.toLowerCase()}`,''));
       for(const value of values)select.append(new Option(value,value));
-      field.append(text,select);wrap.append(field);selects[key]=select;
+      field.append(text,select);fields.append(field);selects[key]=select;
     }
-    const feedback=document.createElement('p');feedback.className='cart-feedback';feedback.setAttribute('role','status');
-    const action=document.createElement('button');action.type='button';action.className='add-to-cart';action.textContent='ADICIONAR AO CARRINHO';
-    action.addEventListener('click',()=>{
+    const feedback=mq('.pm-feedback');feedback.textContent='';
+    const addButton=mq('.pm-add');
+    addButton.onclick=()=>{
       const color=selects.color?.value||'',size=selects.size?.value||'';
       if(selects.color&&!color||selects.size&&!size){feedback.textContent='Escolha '+[selects.color&&!color&&'a cor',selects.size&&!size&&'o tamanho'].filter(Boolean).join(' e ')+' antes de adicionar.';return}
       const result=add(product,color,size);
-      feedback.textContent=result.ok?'Adicionado ao carrinho.':result.message;
-    });
-    wrap.append(action,feedback);
-    return wrap;
+      if(!result.ok){feedback.textContent=result.message;return}
+      modal.close();
+      open();
+    };
+    modal.showModal();
   }
 
-  window.JFCart={addControls,sync,open};
+  /* Botão exibido em cada produto disponível da vitrine */
+  function productAction(product){
+    const button=document.createElement('button');
+    button.type='button';button.className='add-to-cart';
+    button.textContent='ESCOLHER E ADICIONAR';
+    button.setAttribute('aria-label',`Escolher e adicionar ao carrinho: ${product.name}`);
+    button.addEventListener('click',()=>openProduct(product));
+    return button;
+  }
+
+  window.JFCart={productAction,sync,open};
   render();
 })();

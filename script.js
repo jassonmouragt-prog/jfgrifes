@@ -60,7 +60,7 @@ function renderCatalog(){
     const stock=document.createElement('span');stock.className=`catalog-stock${item.stock===0?' is-empty':''}`;
     stock.textContent=item.stock==null?'Disponibilidade sob consulta':item.stock===0?'Esgotado':`${item.stock} ${item.stock===1?'unidade disponível':'unidades disponíveis'}`;
     if(item.stock===0){const unavailable=document.createElement('span');unavailable.className='catalog-unavailable';unavailable.textContent='INDISPONÍVEL';meta.append(cat,title,price,stock,unavailable)}
-    else{meta.append(cat,title,price,stock,window.JFCart.addControls(item))}
+    else{meta.append(cat,title,price,stock,window.JFCart.productAction(item))}
     card.append(media,meta);grid.append(card);
   }
   document.getElementById('catalog-empty').hidden=products.length>0;
