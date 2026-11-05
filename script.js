@@ -59,17 +59,16 @@ function renderCatalog(){
     const price=document.createElement('p');price.textContent=money(item.price);
     const stock=document.createElement('span');stock.className=`catalog-stock${item.stock===0?' is-empty':''}`;
     stock.textContent=item.stock==null?'Disponibilidade sob consulta':item.stock===0?'Esgotado':`${item.stock} ${item.stock===1?'unidade disponível':'unidades disponíveis'}`;
-    const action=document.createElement(item.stock===0?'span':'a');
-    if(item.stock===0){action.className='catalog-unavailable';action.textContent='INDISPONÍVEL'}
-    else{action.href='#contato';action.innerHTML='CONSULTAR '+svgIcon('arrow');action.setAttribute('aria-label',`Consultar ${item.name} pelo WhatsApp`);action.addEventListener('click',event=>{event.preventDefault();const phone=STORE_WHATSAPP.replace(/\D/g,'');if(phone.length<12){alert('Configure o número de WhatsApp da loja no arquivo script.js para habilitar este botão.');return}window.open(`https://wa.me/${phone}?text=${encodeURIComponent(`Olá! Vim pelo site da JF Grifes e gostaria de saber mais sobre ${item.name}.`)}`,'_blank','noopener,noreferrer')})}
-    meta.append(cat,title,price,stock,action);card.append(media,meta);grid.append(card);
+    if(item.stock===0){const unavailable=document.createElement('span');unavailable.className='catalog-unavailable';unavailable.textContent='INDISPONÍVEL';meta.append(cat,title,price,stock,unavailable)}
+    else{meta.append(cat,title,price,stock,window.JFCart.addControls(item))}
+    card.append(media,meta);grid.append(card);
   }
   document.getElementById('catalog-empty').hidden=products.length>0;
 }
 document.querySelectorAll('.catalog-filters button').forEach(button=>button.addEventListener('click',()=>{currentFilter=button.dataset.filter;document.querySelectorAll('.catalog-filters button').forEach(other=>other.classList.toggle('active',other===button));renderCatalog()}));
 search?.addEventListener('input',renderCatalog);
 async function refreshCatalog(){
-  try{catalogProducts=await loadCatalog();renderCatalog()}
+  try{catalogProducts=await loadCatalog();renderCatalog();window.JFCart.sync(catalogProducts)}
   catch{document.getElementById('catalog-empty').textContent='Não foi possível carregar os produtos agora. Tente atualizar a página.';document.getElementById('catalog-empty').hidden=false}
 }
 refreshCatalog();

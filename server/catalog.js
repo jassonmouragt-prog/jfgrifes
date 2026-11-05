@@ -46,6 +46,15 @@ export function cleanProducts(value){
     if(price!==null&&(!Number.isFinite(price)||price<0||price>1_000_000))throw new Error('Preço inválido.');
     const stock=item.stock==null||item.stock===''?null:Number(item.stock);
     if(stock!==null&&(!Number.isInteger(stock)||stock<0||stock>1_000_000))throw new Error('Quantidade em estoque inválida.');
-    return {id,name,category,description,image,price,stock,featured:Boolean(item.featured)};
+    const colors=cleanOptions(item.colors,'cores');
+    const sizes=cleanOptions(item.sizes,'tamanhos');
+    return {id,name,category,description,image,price,stock,colors,sizes,featured:Boolean(item.featured)};
   });
+}
+function cleanOptions(value,label){
+  if(value==null||value==='')return [];
+  const list=Array.isArray(value)?value:String(value).split(',');
+  const options=[...new Set(list.map(option=>String(option).trim()).filter(Boolean))];
+  if(options.length>20||options.some(option=>option.length>30))throw new Error(`Revise as ${label} do produto.`);
+  return options;
 }

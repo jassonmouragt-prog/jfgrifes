@@ -36,7 +36,9 @@ function renderAdmin(){
     const info=document.createElement('div');const title=document.createElement('h3');title.textContent=item.name;
     const meta=document.createElement('p');meta.textContent=`${item.category} · ${money(item.price)}${item.featured?' · Destaque':''}`;
     const stock=document.createElement('small');stock.className=`stock-status${item.stock===0?' is-empty':''}`;stock.textContent=item.stock==null?'Estoque não informado':item.stock===0?'Esgotado':`${item.stock} ${item.stock===1?'unidade':'unidades'} em estoque`;
-    info.append(title,meta,stock);
+    const variants=document.createElement('p');variants.className='variant-summary';
+    variants.textContent=[item.colors?.length&&`Cores: ${item.colors.join(', ')}`,item.sizes?.length&&`Tamanhos: ${item.sizes.join(', ')}`].filter(Boolean).join(' · ')||'Sem cor ou tamanho';
+    info.append(title,meta,variants,stock);
     const actions=document.createElement('div');actions.className='item-actions';
     const edit=document.createElement('button');edit.type='button';edit.textContent='EDITAR';edit.addEventListener('click',()=>openForm(item));
     const remove=document.createElement('button');remove.type='button';remove.className='delete';remove.textContent='EXCLUIR';remove.setAttribute('aria-label',`Excluir ${item.name}`);
@@ -44,7 +46,7 @@ function renderAdmin(){
     actions.append(edit,remove);row.append(image,info,actions);list.append(row);
   }
 }
-function openForm(item){form.reset();photoInput.value='';showError('');editingId=item?.id||null;currentImage=item?.image||'';document.getElementById('dialog-title').textContent=item?'Editar produto':'Novo produto';if(item){form.elements.name.value=item.name;form.elements.category.value=item.category;form.elements.price.value=item.price??'';form.elements.stock.value=item.stock??'';form.elements.description.value=item.description||'';document.getElementById('featured').checked=!!item.featured}showPreview(currentImage);dialog.showModal();form.elements.name.focus()}
+function openForm(item){form.reset();photoInput.value='';showError('');editingId=item?.id||null;currentImage=item?.image||'';document.getElementById('dialog-title').textContent=item?'Editar produto':'Novo produto';if(item){form.elements.name.value=item.name;form.elements.category.value=item.category;form.elements.price.value=item.price??'';form.elements.stock.value=item.stock??'';form.elements.description.value=item.description||'';form.elements.colors.value=(item.colors||[]).join(', ');form.elements.sizes.value=(item.sizes||[]).join(', ');document.getElementById('featured').checked=!!item.featured}showPreview(currentImage);dialog.showModal();form.elements.name.focus()}
 document.getElementById('new-product').addEventListener('click',()=>openForm(null));
 document.getElementById('close-dialog').addEventListener('click',()=>dialog.close());
 document.getElementById('cancel-dialog').addEventListener('click',()=>dialog.close());
@@ -69,7 +71,8 @@ form.addEventListener('submit',async event=>{
   const saveButton=form.querySelector('[type="submit"]');saveButton.disabled=true;saveButton.textContent='SALVANDO...';
   try{
     const image=currentImage.startsWith('data:')?await uploadImage(currentImage):currentImage;
-    const product={id:editingId||crypto.randomUUID(),name,category,price,stock,image,description:form.elements.description.value.trim(),featured:document.getElementById('featured').checked};
+    const splitOptions=value=>[...new Set(value.split(',').map(option=>option.trim()).filter(Boolean))];
+    const product={id:editingId||crypto.randomUUID(),name,category,price,stock,image,colors:splitOptions(form.elements.colors.value),sizes:splitOptions(form.elements.sizes.value),description:form.elements.description.value.trim(),featured:document.getElementById('featured').checked};
     const next=[...products];const index=next.findIndex(item=>item.id===editingId);if(index>=0)next[index]=product;else next.unshift(product);
     await persist(next);dialog.close();
   }catch(error){showError(error.message)}finally{saveButton.disabled=false;saveButton.textContent='SALVAR PRODUTO'}
