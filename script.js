@@ -52,14 +52,17 @@ function renderCatalog(){
     const card=document.createElement('article');card.className='catalog-card';
     const media=document.createElement('div');media.className='catalog-media';
     const img=document.createElement('img');img.src=safeImage(item.image);img.alt=item.name;img.loading='lazy';media.append(img);
-    if(item.featured){const badge=document.createElement('span');badge.className='catalog-badge';badge.textContent='DESTAQUE';media.append(badge)}
+    if(item.stock===0||item.featured){const badge=document.createElement('span');badge.className='catalog-badge';badge.textContent=item.stock===0?'ESGOTADO':'DESTAQUE';media.append(badge)}
     const meta=document.createElement('div');meta.className='catalog-meta';
     const cat=document.createElement('small');cat.textContent=item.category;
     const title=document.createElement('h3');title.textContent=item.name;
     const price=document.createElement('p');price.textContent=money(item.price);
-    const link=document.createElement('a');link.href='#contato';link.innerHTML='CONSULTAR '+svgIcon('arrow');link.setAttribute('aria-label',`Consultar ${item.name} pelo WhatsApp`);
-    link.addEventListener('click',event=>{event.preventDefault();const phone=STORE_WHATSAPP.replace(/\D/g,'');if(phone.length<12){alert('Configure o número de WhatsApp da loja no arquivo script.js para habilitar este botão.');return}window.open(`https://wa.me/${phone}?text=${encodeURIComponent(`Olá! Vim pelo site da JF Grifes e gostaria de saber mais sobre ${item.name}.`)}`,'_blank','noopener,noreferrer')});
-    meta.append(cat,title,price,link);card.append(media,meta);grid.append(card);
+    const stock=document.createElement('span');stock.className=`catalog-stock${item.stock===0?' is-empty':''}`;
+    stock.textContent=item.stock==null?'Disponibilidade sob consulta':item.stock===0?'Esgotado':`${item.stock} ${item.stock===1?'unidade disponível':'unidades disponíveis'}`;
+    const action=document.createElement(item.stock===0?'span':'a');
+    if(item.stock===0){action.className='catalog-unavailable';action.textContent='INDISPONÍVEL'}
+    else{action.href='#contato';action.innerHTML='CONSULTAR '+svgIcon('arrow');action.setAttribute('aria-label',`Consultar ${item.name} pelo WhatsApp`);action.addEventListener('click',event=>{event.preventDefault();const phone=STORE_WHATSAPP.replace(/\D/g,'');if(phone.length<12){alert('Configure o número de WhatsApp da loja no arquivo script.js para habilitar este botão.');return}window.open(`https://wa.me/${phone}?text=${encodeURIComponent(`Olá! Vim pelo site da JF Grifes e gostaria de saber mais sobre ${item.name}.`)}`,'_blank','noopener,noreferrer')})}
+    meta.append(cat,title,price,stock,action);card.append(media,meta);grid.append(card);
   }
   document.getElementById('catalog-empty').hidden=products.length>0;
 }

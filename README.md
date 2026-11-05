@@ -8,11 +8,11 @@ Instale as dependências com `npm install` e rode `npm run dev`. Para testar ape
 
 ## Painel
 
-Abra `/admin.html` e entre com o e-mail e a senha configurados nas variáveis de ambiente. O painel permite cadastrar, editar, excluir, destacar, importar e exportar produtos. Fotos enviadas são compactadas para WebP e ficam no Vercel Blob. As alterações salvas aparecem na vitrine pública em outros dispositivos.
+Abra `/admin` e entre com o e-mail e a senha configurados nas variáveis de ambiente. O painel permite cadastrar, editar, excluir, destacar, definir categoria e quantidade em estoque, importar e exportar produtos. Fotos enviadas são compactadas para WebP e ficam no Vercel Blob. As alterações salvas aparecem na vitrine pública em outros dispositivos.
 
 O servidor usa `ADMIN_EMAIL`, `ADMIN_PASSWORD_SALT`, `ADMIN_PASSWORD_HASH`, `SESSION_SECRET` e `BLOB_READ_WRITE_TOKEN`. Consulte `.env.example`. A senha deve ser transformada com `scrypt` antes de configurar `ADMIN_PASSWORD_HASH`; não coloque a senha em arquivos versionados. O Vercel Blob precisa ser um store **público** conectado ao projeto, pois as imagens dos produtos são exibidas no site público.
 
-Os quatro produtos iniciais são exemplos visuais e não têm preço confirmado. Na primeira alteração, o catálogo passa a ser salvo no Blob.
+Os quatro produtos iniciais são exemplos visuais e não têm preço nem quantidade em estoque confirmados. No formulário, a quantidade é obrigatória para produtos novos; `0` marca o item como esgotado e retira o botão de consulta da vitrine. Na primeira alteração, o catálogo passa a ser salvo no Blob.
 
 ## WhatsApp
 

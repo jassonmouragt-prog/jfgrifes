@@ -3,10 +3,10 @@ import {randomUUID} from 'node:crypto';
 
 const PREFIX='catalog/versions/';
 export const DEFAULT_PRODUCTS=[
-  {id:'camiseta-premium',name:'Camiseta premium',category:'Camisetas',price:null,image:'assets/promo-shirt.webp',description:'Conforto e estilo para o dia a dia.',featured:true},
-  {id:'tenis-urbano',name:'Tênis urbano',category:'Calçados',price:null,image:'assets/promo-sneakers.webp',description:'Versatilidade para acompanhar todos os momentos.',featured:true},
-  {id:'bone-original',name:'Boné original',category:'Acessórios',price:null,image:'assets/promo-cap.webp',description:'O detalhe que completa o look.',featured:false},
-  {id:'bermuda-casual',name:'Bermuda casual',category:'Bermudas',price:null,image:'assets/promo-shorts.webp',description:'Leveza e liberdade para a sua rotina.',featured:false}
+  {id:'camiseta-premium',name:'Camiseta premium',category:'Camisetas',price:null,stock:null,image:'assets/promo-shirt.webp',description:'Conforto e estilo para o dia a dia.',featured:true},
+  {id:'tenis-urbano',name:'Tênis urbano',category:'Calçados',price:null,stock:null,image:'assets/promo-sneakers.webp',description:'Versatilidade para acompanhar todos os momentos.',featured:true},
+  {id:'bone-original',name:'Boné original',category:'Acessórios',price:null,stock:null,image:'assets/promo-cap.webp',description:'O detalhe que completa o look.',featured:false},
+  {id:'bermuda-casual',name:'Bermuda casual',category:'Bermudas',price:null,stock:null,image:'assets/promo-shorts.webp',description:'Leveza e liberdade para a sua rotina.',featured:false}
 ];
 async function versions(){
   const all=[];let cursor;
@@ -44,6 +44,8 @@ export function cleanProducts(value){
     if(!allowedImage)throw new Error('Imagem de produto inválida.');
     const price=item.price==null||item.price===''?null:Number(item.price);
     if(price!==null&&(!Number.isFinite(price)||price<0||price>1_000_000))throw new Error('Preço inválido.');
-    return {id,name,category,description,image,price,featured:Boolean(item.featured)};
+    const stock=item.stock==null||item.stock===''?null:Number(item.stock);
+    if(stock!==null&&(!Number.isInteger(stock)||stock<0||stock>1_000_000))throw new Error('Quantidade em estoque inválida.');
+    return {id,name,category,description,image,price,stock,featured:Boolean(item.featured)};
   });
 }

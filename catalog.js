@@ -1,9 +1,9 @@
 /* Dados de exemplo usados apenas quando a API ainda não estiver disponível no preview local. */
 const DEFAULT_PRODUCTS = [
-  {id:'camiseta-premium',name:'Camiseta premium',category:'Camisetas',price:null,image:'assets/promo-shirt.webp',description:'Conforto e estilo para o dia a dia.',featured:true},
-  {id:'tenis-urbano',name:'Tênis urbano',category:'Calçados',price:null,image:'assets/promo-sneakers.webp',description:'Versatilidade para acompanhar todos os momentos.',featured:true},
-  {id:'bone-original',name:'Boné original',category:'Acessórios',price:null,image:'assets/promo-cap.webp',description:'O detalhe que completa o look.',featured:false},
-  {id:'bermuda-casual',name:'Bermuda casual',category:'Bermudas',price:null,image:'assets/promo-shorts.webp',description:'Leveza e liberdade para a sua rotina.',featured:false}
+  {id:'camiseta-premium',name:'Camiseta premium',category:'Camisetas',price:null,stock:null,image:'assets/promo-shirt.webp',description:'Conforto e estilo para o dia a dia.',featured:true},
+  {id:'tenis-urbano',name:'Tênis urbano',category:'Calçados',price:null,stock:null,image:'assets/promo-sneakers.webp',description:'Versatilidade para acompanhar todos os momentos.',featured:true},
+  {id:'bone-original',name:'Boné original',category:'Acessórios',price:null,stock:null,image:'assets/promo-cap.webp',description:'O detalhe que completa o look.',featured:false},
+  {id:'bermuda-casual',name:'Bermuda casual',category:'Bermudas',price:null,stock:null,image:'assets/promo-shorts.webp',description:'Leveza e liberdade para a sua rotina.',featured:false}
 ];
 async function loadCatalog(){
   const response=await fetch('/api/catalog',{cache:'no-store'});
