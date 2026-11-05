@@ -21,8 +21,17 @@ function showPreview(src){preview.replaceChildren();if(src){const image=document
 function showLoggedIn(active){loginScreen.hidden=active;adminApp.hidden=!active;document.getElementById('logout').hidden=!active;if(!active)loginForm.reset()}
 async function loadCatalog(){const data=await api('/api/catalog');products=data.products;version=data.version;renderAdmin()}
 async function persist(next){
+  const before=products.map(item=>item.image);
   try{const data=await api('/api/catalog',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({products:next,version})});products=data.products;version=data.version;renderAdmin()}
   catch(error){if(error.status===409)await loadCatalog();throw error}
+  // Apaga do armazenamento as fotos que deixaram de ser usadas por algum produto.
+  const kept=new Set(next.map(item=>item.image));
+  await removePhotos(before.filter(url=>!kept.has(url)));
+}
+const PHOTO_HOST='.public.blob.vercel-storage.com';
+function isStoredPhoto(url){try{const u=new URL(url);return u.protocol==='https:'&&u.hostname.endsWith(PHOTO_HOST)}catch{return false}}
+async function removePhotos(urls){
+  for(const url of urls){if(!isStoredPhoto(url))continue;try{await api('/api/upload',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})})}catch{}}
 }
 function renderAdmin(){
   document.getElementById('product-count').textContent=products.length;
@@ -55,7 +64,7 @@ photoInput.addEventListener('change',async()=>{
   const file=photoInput.files?.[0];if(!file)return;
   if(!['image/jpeg','image/png','image/webp'].includes(file.type)){showError('Escolha uma imagem JPG, PNG ou WebP.');return}
   if(file.size>15_000_000){showError('A foto deve ter até 15 MB. Escolha uma imagem menor.');return}
-  try{const bitmap=await createImageBitmap(file);const scale=Math.min(1,1000/bitmap.width,1200/bitmap.height);const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();currentImage=canvas.toDataURL('image/webp',.76);showPreview(currentImage);showError('')}catch{showError('Não foi possível ler esta foto. Escolha outra imagem.')}
+  try{const bitmap=await createImageBitmap(file);const scale=Math.min(1,800/bitmap.width,1000/bitmap.height);const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();currentImage=canvas.toDataURL('image/webp',.68);showPreview(currentImage);showError('')}catch{showError('Não foi possível ler esta foto. Escolha outra imagem.')}
 });
 async function uploadImage(dataUrl){const data=await api('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataUrl})});return data.url}
 form.addEventListener('submit',async event=>{
@@ -69,13 +78,15 @@ form.addEventListener('submit',async event=>{
   if(stock===null||!Number.isInteger(stock)||stock<0||stock>1_000_000){showError('Informe a quantidade em estoque com um número inteiro igual ou maior que zero.');form.elements.stock.focus();return}
   if(!currentImage){showError('Escolha uma foto do produto.');return}
   const saveButton=form.querySelector('[type="submit"]');saveButton.disabled=true;saveButton.textContent='SALVANDO...';
+  let uploaded='',saved=false;
   try{
     const image=currentImage.startsWith('data:')?await uploadImage(currentImage):currentImage;
+    if(currentImage.startsWith('data:'))uploaded=image;
     const splitOptions=value=>[...new Set(value.split(',').map(option=>option.trim()).filter(Boolean))];
     const product={id:editingId||crypto.randomUUID(),name,category,price,stock,image,colors:splitOptions(form.elements.colors.value),sizes:splitOptions(form.elements.sizes.value),description:form.elements.description.value.trim(),featured:document.getElementById('featured').checked};
     const next=[...products];const index=next.findIndex(item=>item.id===editingId);if(index>=0)next[index]=product;else next.unshift(product);
-    await persist(next);dialog.close();
-  }catch(error){showError(error.message)}finally{saveButton.disabled=false;saveButton.textContent='SALVAR PRODUTO'}
+    await persist(next);saved=true;dialog.close();
+  }catch(error){showError(error.message);if(uploaded&&!saved)await removePhotos([uploaded])}finally{saveButton.disabled=false;saveButton.textContent='SALVAR PRODUTO'}
 });
 document.getElementById('export-json').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(products,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='jf-grifes-catalogo.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
 document.getElementById('import-json').addEventListener('change',async event=>{
