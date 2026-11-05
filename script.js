@@ -1,5 +1,5 @@
 /* Altere o número abaixo pelo WhatsApp real da loja (DDI 55 + DDD + número). */
-const STORE_WHATSAPP = '';
+const STORE_WHATSAPP = '+55 84 99146-8756';
 const message = 'Olá! Vim pelo site da JF Grifes e gostaria de conhecer as peças disponíveis.';
 for (const link of document.querySelectorAll('.whatsapp-link')) {
   if (STORE_WHATSAPP.replace(/\D/g, '').length >= 12) {
