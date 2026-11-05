@@ -7,6 +7,7 @@
     "check": "node --check script.js && node --check admin.js && node --check api/auth.js && node --check api/catalog.js && node --check api/upload.js"
   },
   "dependencies": {
-    "@vercel/blob": "^2.8.2"
+    "@vercel/blob": "^2.8.2",
+    "sharp": "^0.34.5"
   }
 }

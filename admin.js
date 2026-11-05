@@ -64,7 +64,7 @@ photoInput.addEventListener('change',async()=>{
   const file=photoInput.files?.[0];if(!file)return;
   if(!['image/jpeg','image/png','image/webp'].includes(file.type)){showError('Escolha uma imagem JPG, PNG ou WebP.');return}
   if(file.size>15_000_000){showError('A foto deve ter até 15 MB. Escolha uma imagem menor.');return}
-  try{const bitmap=await createImageBitmap(file);const scale=Math.min(1,800/bitmap.width,1000/bitmap.height);const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();currentImage=canvas.toDataURL('image/webp',.68);showPreview(currentImage);showError('')}catch{showError('Não foi possível ler esta foto. Escolha outra imagem.')}
+  try{const bitmap=await createImageBitmap(file);const scale=Math.min(1,2000/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();currentImage=canvas.toDataURL('image/jpeg',.9);showPreview(currentImage);showError('')}catch{showError('Não foi possível ler esta foto. Escolha outra imagem.')}
 });
 async function uploadImage(dataUrl){const data=await api('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataUrl})});return data.url}
 form.addEventListener('submit',async event=>{
