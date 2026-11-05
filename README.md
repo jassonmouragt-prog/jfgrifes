@@ -6,6 +6,10 @@ Site público responsivo com catálogo administrável. A vitrine usa HTML, CSS e
 
 Instale as dependências com `npm install` e rode `npm run dev`. Para testar apenas a vitrine com os quatro produtos de exemplo, um servidor estático também funciona; o painel exige as funções da Vercel.
 
+## Categorias
+
+Cada categoria tem sua própria página: `camisetas.html`, `bermudas.html`, `calcados.html` e `acessorios.html`. Elas usam `category.css` e leem o nome da categoria em `data-category` do `<body>`, que `script.js` usa para filtrar o catálogo. Ao criar uma nova categoria, lembre-se de também atualizar a lista de categorias válidas em `server/catalog.js` e `admin.js`, além de criar a página e o card correspondentes.
+
 ## Painel
 
 Abra `/admin` e entre com o e-mail e a senha configurados nas variáveis de ambiente. O painel permite cadastrar, editar, excluir, destacar, definir categoria e quantidade em estoque, importar e exportar produtos. Fotos enviadas são compactadas para WebP e ficam no Vercel Blob. As alterações salvas aparecem na vitrine pública em outros dispositivos.

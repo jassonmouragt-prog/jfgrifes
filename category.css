@@ -1,0 +1,21 @@
+/* Páginas de categoria (camisetas, bermudas, calçados, acessórios). */
+.category-hero{position:relative;isolation:isolate;overflow:hidden;background:#171717;min-height:360px;display:flex;align-items:flex-end}
+.category-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2}
+.category-hero:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#080808f2 0%,#080808b8 42%,#0808084d 100%),linear-gradient(0deg,#080808b3,transparent 55%)}
+.category-hero-inner{padding:70px 0 56px}
+.breadcrumb{font-size:11px;letter-spacing:.14em;color:#d9d3c7;margin-bottom:20px;text-transform:uppercase}
+.breadcrumb a{color:#d9d3c7}
+.breadcrumb a:hover{color:var(--gold-light)}
+.breadcrumb span{color:var(--gold-light)}
+.category-overline{font-size:12px;letter-spacing:.32em;color:var(--gold-light);margin-bottom:18px}
+.category-hero h1{font-family:var(--display);font-size:clamp(60px,7.5vw,112px);line-height:.84;letter-spacing:-.02em;font-weight:800;margin:0 0 20px}
+.category-hero p{font:500 15px/1.5 var(--body);color:#f7f2e8;max-width:540px;margin:0}
+.category-catalog .catalog-heading h2{font-size:clamp(34px,4vw,52px)}
+.category-links{background:#11110f;padding:34px 0 40px;border-top:1px solid #ffffff1f}
+.category-links-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.category-links-label{font-size:11px;letter-spacing:.2em;color:#b8b1a6;font-weight:700}
+.category-chips{display:flex;gap:10px;flex-wrap:wrap}
+.category-chips a{display:inline-block;padding:10px 16px;border:1px solid #5b5b5b;color:#eee;font-size:11px;font-weight:800;letter-spacing:.08em;transition:border-color .2s ease,color .2s ease}
+.category-chips a:hover{border-color:var(--gold);color:var(--gold-light)}
+.category-chips a[aria-current="page"]{border-color:var(--gold);color:var(--gold-light);pointer-events:none}
+@media(max-width:640px){.category-hero{min-height:320px}.category-hero-inner{padding:50px 0 40px}.category-links-inner{display:block}.category-chips{margin-top:14px}}

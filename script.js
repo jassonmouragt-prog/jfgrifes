@@ -41,7 +41,7 @@ document.querySelectorAll('.footer-links a').forEach(el=>{if(el.classList.contai
 
 const grid=document.getElementById('catalog-grid');
 const search=document.getElementById('product-search');
-let currentFilter='Todos';
+let currentFilter=document.body.dataset.category||'Todos';
 let catalogProducts=[];
 function renderCatalog(){
   if(!grid)return;
@@ -67,7 +67,6 @@ function renderCatalog(){
   document.getElementById('catalog-empty').hidden=products.length>0;
 }
 document.querySelectorAll('.catalog-filters button').forEach(button=>button.addEventListener('click',()=>{currentFilter=button.dataset.filter;document.querySelectorAll('.catalog-filters button').forEach(other=>other.classList.toggle('active',other===button));renderCatalog()}));
-document.querySelectorAll('.category-card').forEach((card,index)=>card.addEventListener('click',()=>{currentFilter=['Camisetas','Bermudas','Calçados','Acessórios'][index];document.querySelectorAll('.catalog-filters button').forEach(button=>button.classList.toggle('active',button.dataset.filter===currentFilter));renderCatalog()}));
 search?.addEventListener('input',renderCatalog);
 async function refreshCatalog(){
   try{catalogProducts=await loadCatalog();renderCatalog()}
